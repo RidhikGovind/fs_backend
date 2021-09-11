@@ -6,7 +6,7 @@
 	"scripts": {
 		"start": "node index.js",
 		"dev": "nodemon index.js",
-		"build": "rm -rf build && cd ../fend/ && npm run build --prod && cp -r build ../bend",
+		"build:ui": "rm -rf build && cd ../fend/ && npm run build --prod && cp -r build ../bend",
 		"deploy": "git push heroku main",
 		"deploy:full": "npm run build:ui & git add . && git commit -m uibuild && git push",
 		"logs:prod": "heroku logs --tail"
