@@ -40,7 +40,9 @@ let notes = [
 
 app.get('/', (req, res) => {
 	console.log(notes);
-	res.send('<h1>Helloi</h1>');
+	res.send(
+		'<h1>Surprised ? Yep. This is the backend for the fullstack app. YAY !</h1>'
+	);
 });
 
 app.get('/api/notes', (request, response) => {
