@@ -16,6 +16,12 @@ app.use(express.json());
 
 app.use(cors());
 
+/**
+ * this middleware here is used to show the 'static content' from the build folder
+ * whenever express gets a GET req, it will first check if the 'build' file is available or not
+ */
+app.use(express.static('build'))
+
 const PORT = process.env.PORT || 5000;
 let notes = [
 	{
