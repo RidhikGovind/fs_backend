@@ -1,22 +1,29 @@
 const mongoose = require('mongoose');
+const config = require('../utils/config');
 
-const url = process.env.MONGODB_URI;
-
-mongoose.connect(url)
-    .then(result => {
-        console.log('connected to MongoDB')
-    })
-    .catch(err => {
-        console.log('error connecting to MongoDB:', err.message)
-    })
+mongoose
+	.connect(config.MONGODB_URI)
+	.then((result) => {
+		console.log('connected to MongoDB');
+	})
+	.catch((err) => {
+		console.log('error connecting to MongoDB:', err.message);
+	});
 
 const noteSchema = new mongoose.Schema({
-	content: String,
-	date: Date,
+	content: {
+		type: String,
+		minlength: 5,
+		required: true,
+	},
+	date: {
+		type: Date,
+		required: true,
+	},
 	important: Boolean,
 });
 
-const Note = mongoose.model('Note', noteSchema);
+// const Note = mongoose.model('Note', noteSchema);
 
 //removing the V__ that comes with mongodb JSON
 noteSchema.set('toJSON', {

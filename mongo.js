@@ -1,3 +1,13 @@
+
+/**
+ * @note - NO NEED OF THIS FILE, SINCE WE HAVE MOVED ALL THE LOGIC 
+ * TO note.js.
+ * @usecase - this file can be used as a reference for the all the basic 
+ * mongodb functionalities
+ */
+
+
+
 const mongoose = require('mongoose');
 
 if (process.argv.length < 3) {
@@ -13,8 +23,16 @@ mongoose.connect(url);
 
 //1. creating a scehema
 const noteSchema = new mongoose.Schema({
-	content: String,
-	date: Date,
+	/* we can validate the input from the user using mongoose validator */
+	content: {
+		type: String,
+		minlength: 5,
+		required: true
+	},
+	date: {
+		type: Date,
+		required: true
+	},
 	important: Boolean,
 });
 

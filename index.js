@@ -1,9 +1,15 @@
+/**
+ * @fileOverview Main entry file for Node.js server
+ */
+
 //1.  create a simple server which open in port 5000
 //2. Fetch a single note resource using its id
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const app = express();
+const config = require('./utils/config');
+const logger = require('./utils/logger');
 
 const Note = require('./models/note');
 
@@ -29,6 +35,8 @@ const errorHandler = (error, request, response, next) => {
 
 	if (error.name === 'CastError') {
 		return response.status(400).send({ error: 'malformatted id' });
+	} else if (error.name === 'ValidationError') {
+		return response.status(400).json({ error: error.message });
 	}
 
 	next(error);
@@ -120,6 +128,7 @@ app.delete('/api/notes/:id', (req, res, next) => {
 		.catch((error) => next(error));
 });
 
+/* Post route */
 app.post('/api/notes', (req, res, next) => {
 	/**
 	 * 1. create a unique id for the note and append to it.
@@ -155,9 +164,10 @@ app.post('/api/notes', (req, res, next) => {
 	/******** MongoDB version ******* */
 	const body = req.body;
 
-	if (body.content === undefined) {
-		return response.status(400).json({ error: 'content is missing' });
-	}
+	/* No need for the below condition bcz we are using the built-in validation from mongoose */
+	// if (body.content === undefined) {
+	// 	return response.status(400).json({ error: 'content is missing' });
+	// }
 
 	const note = new Note({
 		content: body.content,
@@ -165,9 +175,15 @@ app.post('/api/notes', (req, res, next) => {
 		date: new Date(),
 	});
 
-	note.save().then((savedNote) => {
-		res.json(savedNote);
-	});
+	note
+		.save()
+		.then((savedNote) => {
+			res.json(savedNote.toJSON());
+		})
+		.then((savedAndFormattedNote) => {
+			res.json(savedAndFormattedNote);
+		})
+		.catch((error) => next(error));
 	/***************************** */
 });
 
@@ -194,7 +210,6 @@ app.use(unknownEndpoint);
 
 app.use(errorHandler);
 
-const PORT = process.env.PORT;
 app.listen(PORT, () => {
-	console.log(`Server is running at ${PORT}`);
+	logger.info(`Server is running at ${config.PORT}`);
 });
