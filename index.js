@@ -16,16 +16,15 @@ app.use(express.static('build'));
 app.use(express.json());
 app.use(middleware.requestLogger);
 
-app.use('/api/notes', notesRouter);
-
-app.use(middleware.unknownEndpoint);
-app.use(middleware.errorHandler);
-
 app.get('/', (req, res, next) => {
 	res.send(
 		'<h1>Surprised ? Yep. This is the backend for the fullstack app. YAY !</h1>'
 	);
 });
+app.use('/api/notes', notesRouter);
+
+app.use(middleware.unknownEndpoint);
+app.use(middleware.errorHandler);
 
 app.listen(config.PORT, () => {
 	logger.info(`Server is running at ${config.PORT}`);

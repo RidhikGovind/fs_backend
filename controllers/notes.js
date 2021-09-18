@@ -6,14 +6,14 @@ const notesRouter = require('express').Router(); //using express router middlewa
 const Note = require('../models/note');
 
 /* Get all the notes from DB */
-notesRouter.get('/api/notes', (req, res, next) => {
+notesRouter.get('/', (req, res, next) => {
 	Note.find({}).then((notes) => {
 		res.json(notes);
 	});
 });
 
 /* Get a specific resource note */
-notesRouter.get('/api/notes/:id', (req, res, next) => {
+notesRouter.get('/:id', (req, res, next) => {
 	Note.findById(req.params.id)
 		.then((note) => {
 			if (note) {
@@ -27,7 +27,7 @@ notesRouter.get('/api/notes/:id', (req, res, next) => {
 });
 
 /* Post route */
-notesRouter.post('/api/notes', (req, res, next) => {
+notesRouter.post('/', (req, res, next) => {
 	/******** MongoDB version ******* */
 	const body = req.body;
 	const note = new Note({
@@ -49,7 +49,7 @@ notesRouter.post('/api/notes', (req, res, next) => {
 });
 
 /* Delete route */
-notesRouter.delete('/api/notes/:id', (req, res, next) => {
+notesRouter.delete('/:id', (req, res, next) => {
 	Note.findByIdAndRemove(req.params.id)
 		.then((res) => {
 			res.status(204).end();
@@ -58,7 +58,7 @@ notesRouter.delete('/api/notes/:id', (req, res, next) => {
 });
 
 /* Update route */
-notesRouter.put('/api/notes/:id', (request, response, next) => {
+notesRouter.put('/:id', (request, response, next) => {
 	const body = request.body;
 
 	const note = {
@@ -73,4 +73,4 @@ notesRouter.put('/api/notes/:id', (request, response, next) => {
 		.catch((error) => next(error));
 });
 
-module.exports = notesRouter
+module.exports = notesRouter;
