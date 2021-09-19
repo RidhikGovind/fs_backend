@@ -16,6 +16,41 @@ POST http://localhost:5000/api/notes
 content-type: application/json
 
 {
-    "content": "heh ",
+    "content": "New note for testing token generation",
+    "important": true,
+    "userId": "6145b13cc6372bc5d6ca2d81"
+}
+
+### user HTTP methods
+GET http://localhost:5000/api/users
+content-type: application/json
+
+###
+POST http://localhost:5000/api/users
+content-type: application/json
+
+{
+    "username": "John Cena",
+    "name": "John",
+    "password": "cenajohn123"
+}
+
+
+### login HTTP methods
+POST http://localhost:5000/api/login
+content-type: application/json
+
+{
+    "username": "John Cena",
+    "password": "cenajohn123"
+}
+
+### post with auth: bearer token
+POST http://localhost:5000/api/notes
+content-type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkpvaG4gQ2VuYSIsImlkIjoiNjE0NzA3MTBiYWFlMGZlNjQ1ODk0ZjNmIiwiaWF0IjoxNjMyMDY2MTA5LCJleHAiOjE2MzIwNjYxNjl9.osTaQMh3SthM_YQ6ZxcNipFOnF0twZ8aNBhEVHRRPds
+
+{
+    "content": "Creating a new note from the browser token from a user",
     "important": true
 }

@@ -4,12 +4,31 @@
 
 const notesRouter = require('express').Router(); //using express router middleware which does all the routing functions
 const Note = require('../models/note');
+const User = require('../models/user');
+const jwt = require('jsonwebtoken');
+
+const getTokenFrom = (request) => {
+	const authorization = request.get('authorization');
+	console.log(authorization);
+	if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+		return authorization.substring(7);
+	}
+
+	return null;
+};
 
 /* Get all the notes from DB */
-notesRouter.get('/', (req, res, next) => {
-	Note.find({}).then((notes) => {
+notesRouter.get('/', async (req, res, next) => {
+	try {
+		const notes = await Note.find({}).populate('user', {
+			username: 1,
+			name: 1,
+		});
+
 		res.json(notes);
-	});
+	} catch (error) {
+		next(error);
+	}
 });
 
 /* Get a specific resource note */
@@ -26,25 +45,36 @@ notesRouter.get('/:id', (req, res, next) => {
 		.catch((err) => next(err));
 });
 
-/* Post route */
-notesRouter.post('/', (req, res, next) => {
+/* creating a new note */
+notesRouter.post('/', async (req, res, next) => {
 	/******** MongoDB version ******* */
-	const body = req.body;
-	const note = new Note({
-		content: body.content,
-		important: body.important || false,
-		date: new Date(),
-	});
 
-	note
-		.save()
-		.then((savedNote) => {
-			res.json(savedNote.toJSON());
-		})
-		.then((savedAndFormattedNote) => {
-			res.json(savedAndFormattedNote);
-		})
-		.catch((error) => next(error));
+	try {
+		const body = req.body;
+
+		const token = getTokenFrom(req);
+		const decodedToken = jwt.verify(token, process.env.SECRET);
+		if (!token || !decodedToken.id) {
+			return res.status(401).json({ error: 'token missing or invalid' });
+		}
+		const user = await User.findById(decodedToken.id);
+
+		const note = new Note({
+			content: body.content,
+			important: body.important === undefined ? false : body.important,
+			date: new Date(),
+			user: user._id,
+		});
+
+		const savedNote = await note.save();
+		user.notes = user.notes.concat(savedNote._id);
+		await user.save();
+
+		res.json(savedNote);
+	} catch (error) {
+		next(error);
+	}
+
 	/***************************** */
 });
 
